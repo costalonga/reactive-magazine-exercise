@@ -10,7 +10,8 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
     private final String subscriberName;
     private Flow.Subscription subscription;
     private Integer Nrevistas;
-    private Integer caixa[];
+    private Integer Ndescarte;
+    private Integer lastItem; //guarda o numero do ultimo item recebido pelo assinante para verificar se ele perdeu alguma publicacao
 
     /**
      * Construtor.
@@ -21,8 +22,7 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
         this.sleepTime = sleepTime;
         this.subscriberName = subscriberName;
         this.Nrevistas = 0;
-        this.caixa = new Integer[8];
-
+        this.Ndescarte = 0;
 
         // @TODO
         // Complete aqui com outras inicialiações de estado que seu objeto precisa manter para
@@ -54,7 +54,15 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
      */
     public void onNext(Integer item) {
         // @TODO
-        log("Received item: " + item);
+
+        //Case lost last item
+        if ((getLastItem()+1) != item) {
+            updateNdescarte();
+            log("Subscriber " + getSubscriberName() + " lost item: " + item);
+        }
+
+        log("Subscriber " + getSubscriberName() + " received item: " + item);
+        setLastItem(item);
         updateNrevistas(); //incriment the number of items the Subscriber received
         try {
             //wait some time until next request
@@ -105,6 +113,12 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
 
     public Integer getNrevistas() { return Nrevistas; }
     public void updateNrevistas() { Nrevistas += 1; }
+
+    public Integer getNdescarte() { return Ndescarte; }
+    public void updateNdescarte() { Ndescarte += 1; }
+
+    public Integer getLastItem() { return lastItem; }
+    public void setLastItem(Integer item) { lastItem = item; }
 
     public long getSleepTime() { return sleepTime; }
 
