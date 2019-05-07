@@ -23,6 +23,7 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
         this.subscriberName = subscriberName;
         this.Nrevistas = 0;
         this.Ndescarte = 0;
+        this.lastItem = -1;
 
         // @TODO
         // Complete aqui com outras inicialiações de estado que seu objeto precisa manter para
@@ -55,10 +56,17 @@ public class MagazineSubscriber implements Flow.Subscriber<Integer>  {
     public void onNext(Integer item) {
         // @TODO
 
+        if (getLastItem() == -1) {
+            setLastItem(item);
+        }
+
         //Case lost last item
-        if ((getLastItem()+1) != item) {
+        else if ((getLastItem()+1) != item) {
             updateNdescarte();
-            log("Subscriber " + getSubscriberName() + " lost item: " + item);
+            log("Subscriber " + getSubscriberName() + " lost item(s): ");
+            for(int i = getLastItem(); i < lastItem; i++) {
+                log(String.valueOf(i));
+            }
         }
 
         log("Subscriber " + getSubscriberName() + " received item: " + item);
